@@ -1,162 +1,300 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>AvatarGO - Control</title>
+    <title>Avatar-IA - Control</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
-        
-        .navbar { background: #2c3e50; padding: 15px 30px; display: flex; gap: 20px; }
-        .navbar a { color: white; text-decoration: none; font-weight: bold; font-size: 15px; opacity: 0.8; }
-        .navbar a:hover, .navbar a.active { opacity: 1; border-bottom: 2px solid #00ff00; }
-        .nav-visor { margin-left: auto; color: #00ff00 !important; }
-        
-        .container { max-width: 900px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { text-align: center; color: #1a1a1a; margin-bottom: 25px; }
-        
-        .zona-carga { border: 2px dashed #b2bec3; padding: 30px; text-align: center; border-radius: 8px; background: #fafbfc; margin-bottom: 20px; }
-        .btn-cargar { background: #6c5ce7; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
-        #fileInput { display: none; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
 
-        .grilla-botones { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card-boton { display: flex; flex-direction: column; background: #fafbfc; border: 1px solid #e3e6f0; padding: 12px; border-radius: 8px; transition: all 0.3s ease; }
-        
-        .card-boton button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; font-size: 14px; transition: all 0.2s; }
-        
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            opacity: 0.8;
+        }
+
+        .navbar a:hover,
+        .navbar a.active {
+            opacity: 1;
+            border-bottom: 2px solid #00ff00;
+        }
+
+        .nav-visor {
+            margin-left: auto;
+            color: #00ff00 !important;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .zona-carga {
+            border: 2px dashed #b2bec3;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            background: #fafbfc;
+            margin-bottom: 20px;
+        }
+
+        .btn-cargar {
+            background: #6c5ce7;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .grilla-botones {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card-boton {
+            display: flex;
+            flex-direction: column;
+            background: #fafbfc;
+            border: 1px solid #e3e6f0;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .card-boton button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
         /* Colores de los estados originales */
-        .btn-hablar { background: #28a745; }    .btn-hablar:hover { background: #218838; }
-        .btn-pensar { background: #fd7e14; }    .btn-pensar:hover { background: #e0670d; }
-        .btn-esperar { background: #007bff; }   .btn-esperar:hover { background: #0069d9; }
-        .btn-oscurecer { background: #212529; } .btn-oscurecer:hover { background: #111215; }
-        
-        /* ESTADO USADO: Convierte la tarjeta y el botón a gris */
-        .card-boton.usado { background: #e9ecef; border-color: #ced4da; opacity: 0.7; }
-        .card-boton.usado button { background: #6c757d !important; color: #f8f9fa; }
+        .btn-hablar {
+            background: #28a745;
+        }
 
-        .info-meta { font-size: 11px; color: #858796; margin-top: 8px; text-align: center; font-style: italic; }
+        .btn-hablar:hover {
+            background: #218838;
+        }
+
+        .btn-pensar {
+            background: #fd7e14;
+        }
+
+        .btn-pensar:hover {
+            background: #e0670d;
+        }
+
+        .btn-esperar {
+            background: #007bff;
+        }
+
+        .btn-esperar:hover {
+            background: #0069d9;
+        }
+
+        .btn-oscurecer {
+            background: #212529;
+        }
+
+        .btn-oscurecer:hover {
+            background: #111215;
+        }
+
+        /* ESTADO USADO: Convierte la tarjeta y el botón a gris */
+        .card-boton.usado {
+            background: #e9ecef;
+            border-color: #ced4da;
+            opacity: 0.7;
+        }
+
+        .card-boton.usado button {
+            background: #6c757d !important;
+            color: #f8f9fa;
+        }
+
+        .info-meta {
+            font-size: 11px;
+            color: #858796;
+            margin-top: 8px;
+            text-align: center;
+            font-style: italic;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="navbar">
         <a href="index.html" class="active">Control</a>
         <a href="creador.html">Creador de libretos</a>
-        <a href="avatar_display.html" target="_blank" class="nav-visor">🖥️ Abrir Visor (Nueva Pestaña)</a>
+        <a href="visor.html" target="_blank" class="nav-visor">🖥️ Abrir Visor (Nueva Pestaña)</a>
     </div>
 
     <div class="container">
-        <h1>AvatarGO - Control</h1>
-        
+        <h1>Avatar-IA - Control</h1>
+
         <div id="zonaCarga" class="zona-carga">
-            <button class="btn-cargar" onclick="document.getElementById('fileInput').click()">📁 Cargar config.json</button>
+            <button class="btn-cargar" onclick="document.getElementById('fileInput').click()">📁 Cargar
+                config.json</button>
             <input type="file" id="fileInput" accept=".json" onchange="cargarJsonManual(this)">
         </div>
 
         <div id="contenedorPrincipal" class="grilla-botones"></div>
     </div>
 
-<script>
-    const canal = new BroadcastChannel('anima_ai_channel');
-    let temporizadorEstado = null;
-    let datosActuales = []; // Guarda la estructura del JSON activo
-    let botonesUsados = []; // Guarda los índices o IDs de los botones cliqueados
+    <script>
+        const canal = new BroadcastChannel('anima_ai_channel');
+        let temporizadorEstado = null;
+        let datosActuales = []; // Guarda la estructura del JSON activo
+        let botonesUsados = []; // Guarda los índices o IDs de los botones cliqueados
 
-    window.onload = function() {
-        // Comprobar si existen datos previos en localStorage al refrescar
-        if (localStorage.getItem('anima_json_datos')) {
-            const continuar = confirm("Se detectó una sesión previa. ¿Deseas CONTINUAR donde te quedaste?\n\n(Aceptar = Continuar / Cancelar = Iniciar sesión nueva)");
-            
-            if (continuar) {
-                datosActuales = JSON.parse(localStorage.getItem('anima_json_datos'));
-                botonesUsados = JSON.parse(localStorage.getItem('anima_botones_usados')) || [];
-                
-                // Dibujar botones y ocultar zona de carga automáticamente
-                document.getElementById('contenedorPrincipal').innerHTML = '';
-                datosActuales.forEach((item, index) => crearBotonHTML(item, index));
-                document.getElementById('zonaCarga').style.display = 'none';
-            } else {
-                // Si elige sesión nueva, borramos el rastro antiguo
-                localStorage.clear();
+        window.onload = function () {
+            // Comprobar si existen datos previos en localStorage al refrescar
+            if (localStorage.getItem('anima_json_datos')) {
+                const continuar = confirm("Se detectó una sesión previa. ¿Deseas CONTINUAR donde te quedaste?\n\n(Aceptar = Continuar / Cancelar = Iniciar sesión nueva)");
+
+                if (continuar) {
+                    datosActuales = JSON.parse(localStorage.getItem('anima_json_datos'));
+                    botonesUsados = JSON.parse(localStorage.getItem('anima_botones_usados')) || [];
+
+                    // Dibujar botones y ocultar zona de carga automáticamente
+                    document.getElementById('contenedorPrincipal').innerHTML = '';
+                    datosActuales.forEach((item, index) => crearBotonHTML(item, index));
+                    document.getElementById('zonaCarga').style.display = 'none';
+                } else {
+                    // Si elige sesión nueva, borramos el rastro antiguo
+                    localStorage.clear();
+                }
             }
-        }
-    };
-function cargarJsonManual(input) {
-        // CORREGIDO: Extraemos el primer archivo de la lista [0]
-        const archivo = input.files[0]; 
-        if (!archivo) return;
-        
-        const lector = new FileReader();
-        lector.onload = function(evento) {
-            try {
-                datosActuales = JSON.parse(evento.target.result);
-                botonesUsados = []; // Reiniciamos historial para un JSON nuevo
-                
-                // Guardar base en localStorage
-                localStorage.setItem('anima_json_datos', JSON.stringify(datosActuales));
-                localStorage.setItem('anima_botones_usados', JSON.stringify(botonesUsados));
-
-                document.getElementById('contenedorPrincipal').innerHTML = '';
-                datosActuales.forEach((item, index) => crearBotonHTML(item, index));
-                document.getElementById('zonaCarga').style.display = 'none';
-            } catch (error) { alert("Archivo JSON inválido."); }
         };
-        lector.readAsText(archivo);
-    }
+        function cargarJsonManual(input) {
+            // CORREGIDO: Extraemos el primer archivo de la lista [0]
+            const archivo = input.files[0];
+            if (!archivo) return;
 
-    function crearBotonHTML(item, index) {
-        const contenedor = document.getElementById('contenedorPrincipal');
-        const card = document.createElement('div');
-        
-        // Comprobar si este botón específico ya había sido usado
-        const esUsado = botonesUsados.includes(index);
-        card.className = `card-boton ${esUsado ? 'usado' : ''}`;
-        card.id = `card_${index}`;
+            const lector = new FileReader();
+            lector.onload = function (evento) {
+                try {
+                    datosActuales = JSON.parse(evento.target.result);
+                    botonesUsados = []; // Reiniciamos historial para un JSON nuevo
 
-        let colorClase = `btn-${item.tipo}`;
-        let metaTexto = item.tiempo > 0 ? `⏱️ ${item.tiempo}s` : 'Acción Directa';
-        
-        // Si ya fue usado, le añadimos el tilde visual al texto del botón
-        let etiquetaTexto = esUsado ? `✓ ${item.label}` : item.label;
+                    // Guardar base en localStorage
+                    localStorage.setItem('anima_json_datos', JSON.stringify(datosActuales));
+                    localStorage.setItem('anima_botones_usados', JSON.stringify(botonesUsados));
 
-        const audioSeguro = item.audio ? item.audio.replace(/"/g, '&quot;') : '';
+                    document.getElementById('contenedorPrincipal').innerHTML = '';
+                    datosActuales.forEach((item, index) => crearBotonHTML(item, index));
+                    document.getElementById('zonaCarga').style.display = 'none';
+                } catch (error) { alert("Archivo JSON inválido."); }
+            };
+            lector.readAsText(archivo);
+        }
 
-        card.innerHTML = `
+        function crearBotonHTML(item, index) {
+            const contenedor = document.getElementById('contenedorPrincipal');
+            const card = document.createElement('div');
+
+            // Comprobar si este botón específico ya había sido usado
+            const esUsado = botonesUsados.includes(index);
+            card.className = `card-boton ${esUsado ? 'usado' : ''}`;
+            card.id = `card_${index}`;
+
+            let colorClase = `btn-${item.tipo}`;
+            let metaTexto = item.tiempo > 0 ? `⏱️ ${item.tiempo}s` : 'Acción Directa';
+
+            // Si ya fue usado, le añadimos el tilde visual al texto del botón
+            let etiquetaTexto = esUsado ? `✓ ${item.label}` : item.label;
+
+            const audioSeguro = item.audio ? item.audio.replace(/"/g, '&quot;') : '';
+
+            card.innerHTML = `
             <button id="btn_${index}" class="${colorClase}" onclick="ejecutarAccion('${item.tipo}', '${item.video}', '${audioSeguro}', ${item.tiempo}, \`${item.subtitulo || ''}\`, ${index})">
                 ${etiquetaTexto}
             </button>
             <div class="info-meta">${metaTexto}</div>
         `;
-        contenedor.appendChild(card);
-    }
-
-    function ejecutarAccion(tipo, videoArchivo, audioArchivo, tiempo, textoSubtitulo, index) {
-        if (temporizadorEstado) clearTimeout(temporizadorEstado);
-
-        // Registrar el botón como usado (excepto comandos globales como oscurecer)
-        if (tipo !== 'oscurecer' && !botonesUsados.includes(index)) {
-            botonesUsados.push(index);
-            localStorage.setItem('anima_botones_usados', JSON.stringify(botonesUsados));
-            
-            // Cambiar aspecto visual al instante
-            const tarjeta = document.getElementById(`card_${index}`);
-            const boton = document.getElementById(`btn_${index}`);
-            if (tarjeta && boton) {
-                tarjeta.classList.add('usado');
-                if (!boton.innerText.startsWith('✓')) {
-                    boton.innerText = `✓ ${boton.innerText}`;
-                }
-            }
+            contenedor.appendChild(card);
         }
 
-        if (tipo === 'oscurecer') { canal.postMessage({ comando: 'OSCURECER' }); return; }
-        if (tipo === 'esperar') { canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: videoArchivo, audio: '', subtitulo: '' }); return; }
+        function ejecutarAccion(tipo, videoArchivo, audioArchivo, tiempo, textoSubtitulo, index) {
+            if (temporizadorEstado) clearTimeout(temporizadorEstado);
 
-        canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: videoArchivo, audio: audioArchivo, subtitulo: textoSubtitulo, tiempo: tiempo });
-        
-        temporizadorEstado = setTimeout(() => {
-            canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: 'esperando.mp4', audio: '', subtitulo: '' });
-        }, tiempo * 1000);
-    }
-</script>
+            // ... (Toda tu lógica original para marcar botones usados se queda igual) ...
+            if (tipo !== 'oscurecer' && !botonesUsados.includes(index)) {
+                botonesUsados.push(index);
+                localStorage.setItem('anima_botones_usados', JSON.stringify(botonesUsados));
+                const tarjeta = document.getElementById(`card_${index}`);
+                const boton = document.getElementById(`btn_${index}`);
+                if (tarjeta && boton) {
+                    tarjeta.classList.add('usado');
+                    if (!boton.innerText.startsWith(' ')) { boton.innerText = ` ${boton.innerText}`; }
+                }
+            }
+            if (tipo === 'oscurecer') { canal.postMessage({ comando: 'OSCURECER' }); return; }
+            if (tipo === 'esperar') { canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: videoArchivo, audio: '', subtitulo: '' }); return; }
+
+            // 🧠 NUEVO: Averiguamos si hay un botón siguiente en el orden del libreto para precargarlo
+            let videoSiguiente = '';
+            if (datosActuales && datosActuales[index + 1]) {
+                videoSiguiente = datosActuales[index + 1].video;
+            }
+
+            // Enviamos el estado actual junto con el nombre del video que debe irse preparando
+            canal.postMessage({
+                comando: 'CAMBIAR_ESTADO',
+                video: videoArchivo,
+                audio: audioArchivo,
+                subtitulo: textoSubtitulo,
+                tiempo: tiempo,
+                videoSiguiente: videoSiguiente // 🔥 Enviamos el adelanto al visor
+            });
+
+            temporizadorEstado = setTimeout(() => {
+                canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: 'esperando.mp4', audio: '', subtitulo: '' });
+            }, tiempo * 1000);
+        }
+
+    </script>
 </body>
+
 </html>

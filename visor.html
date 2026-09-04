@@ -1,123 +1,316 @@
+<!-- visor.html -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>AvatarGO - Display</title>
+    <title>Avatar-IA - Display</title>
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
-        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.15s ease-in-out; z-index: 1; }
-        video.activo { opacity: 1; z-index: 2; }
-        .contenedor-subtitulo { position: fixed; bottom: 8%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.75); color: #ffffff; padding: 12px 30px; border-radius: 6px; font-size: 26px; font-family: Arial, sans-serif; font-weight: 500; text-align: center; max-width: 80%; display: none; z-index: 15; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
-        .pantalla-dos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: #00ff00; padding: 20px; box-sizing: border-box; font-size: 20px; display: block; z-index: 10; }
-        .cursor { animation: parpadeo 0.8s infinite; }
-        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .btn-inicio { background: #00ff00; color: black; border: none; padding: 12px 24px; font-weight: bold; font-family: inherit; cursor: pointer; margin-top: 20px; display: inline-block; font-size: 16px; }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.15s ease-in-out;
+            z-index: 1;
+            /* Filtro holográfico: Resplandor sutil azul y balance de brillo */
+            filter: drop-shadow(0 0 10px rgba(0, 191, 255, 0.5)) brightness(1.05) contrast(1.05);
+        }
+
+        video.activo {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* NUEVO: Footer Negro Translúcido con estética de Terminal Futurista */
+        .hologram-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.85);
+            /* Fondo negro translúcido solicitado */
+            border-top: 2px solid #00bfff;
+            /* Línea superior azul eléctrico */
+            box-shadow: 0 -10px 25px rgba(0, 191, 255, 0.25);
+            /* Resplandor neón hacia arriba */
+            box-sizing: border-box;
+            padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            z-index: 15;
+            transition: opacity 0.3s ease;
+        }
+
+        /* NUEVO: Estilo del Texto Azul Eléctrico */
+        .hologram-text {
+            color: #00f0ff;
+            /* Azul eléctrico / Neón */
+            font-size: 26px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            line-height: 1.4;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.3);
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        /* NUEVO: Cursor bloque parpadeante estilo computadora de ciencia ficción */
+        .hologram-text::after {
+            content: '█';
+            margin-left: 5px;
+            animation: parpadeoBloque 0.8s infinite;
+        }
+
+        @keyframes parpadeoBloque {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .pantalla-dos {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height:
+                100%;
+            background: black;
+            color: #001aff;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 20px;
+            display: block;
+            z-index: 20;
+        }
+
+        .cursor {
+            animation: parpadeo 0.8s infinite;
+        }
+
+        @keyframes parpadeo {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .btn-inicio {
+            background: #1d009b;
+            color: rgb(255, 255, 255);
+            border: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+            font-size: 16px;
+        }
     </style>
 </head>
-<body>
 
+<body>
     <div id="pantallaTerminal" class="pantalla-dos">
         <p>(C)COPYRIGHT IA CORP 2026.</p>
         <br>
         <div id="lineaPrompt">
-            <span>C:\preguntale a chatGPT>READY...</span><br>
-            <button class="btn-inicio" onclick="inicializarSistema()">[ EJECUTAR IA ]</button>
+            <span>C:\preguntale a chatGPT></span><span class="cursor">_</span><br>
+            <button class="btn-inicio" onclick="inicializarSistema()">[ EJECUTAR IA
+                ]</button>
         </div>
     </div>
-    
-    <div id="cajaSubtitulo" class="contenedor-subtitulo"></div>
+
+    <!-- MODIFICADO: Cambiamos la caja flotante vieja por el nuevo Footer Holográfico -->
+    <div id="cajaFooter" class="hologram-footer" style="display: none;">
+        <p id="cajaSubtitulo" class="hologram-text"></p>
+    </div>
 
     <video id="videoA" loop playsinline></video>
     <video id="videoB" loop playsinline></video>
-    
-    <!-- Reproductor de audio independiente invisible -->
+
     <audio id="reproductorAudio"></audio>
 
-    <script>
-        const vidA = document.getElementById('videoA');
-        const vidB = document.getElementById('videoB');
-        const audioSeparado = document.getElementById('reproductorAudio');
-        const pantallaTerminal = document.getElementById('pantallaTerminal');
-        const cajaSubtitulo = document.getElementById('cajaSubtitulo');
-        
-        const canal = new BroadcastChannel('anima_ai_channel');
-        let sistemaListo = false;
-        let reproductorActual = 'A'; 
-        let temporizadorSubtitulo = null;
+   <script>
+    const vidA = document.getElementById('videoA');
+    const vidB = document.getElementById('videoB');
+    const audioSeparado = document.getElementById('reproductorAudio');
+    const pantallaTerminal = document.getElementById('pantallaTerminal');
 
-        function inicializarSistema() {
-            sistemaListo = true;
-            pantallaTerminal.style.display = 'none';
-            vidA.src = "esperando.mp4";
-            vidA.load();
-            vidA.play().then(() => vidA.classList.add('activo'));
+    // Referencias a los elementos modificados del DOM
+    const cajaFooter = document.getElementById('cajaFooter');
+    const cajaSubtitulo = document.getElementById('cajaSubtitulo');
+
+    const canal = new BroadcastChannel('anima_ai_channel');
+    let sistemaListo = false;
+    let reproductorActual = 'A';
+    let temporizadorSubtitulo = null;
+    let intervaloTipeo = null; // NUEVO: Guarda el control de la animación letra por letra
+
+    function actualizarLinkPrecarga(nombreVideo) {
+        // Si no hay video siguiente (fin del libreto), eliminamos cualquier precarga activa
+        if (!nombreVideo || nombreVideo.trim() === "") {
+            const linkViejo = document.getElementById('preloadDinamico');
+            if (linkViejo) linkViejo.remove();
+            return;
         }
 
-        function obtenerNombreArchivo(url) {
-            return url.substring(url.lastIndexOf('/') + 1);
+        // Buscamos si ya existe nuestra etiqueta de precarga instalada en el <head>
+        let linkPrecarga = document.getElementById('preloadDinamico');
+
+        if (!linkPrecarga) {
+            // Si no existe, la creamos por primera vez
+            linkPrecarga = document.createElement('link');
+            linkPrecarga.id = 'preloadDinamico';
+            linkPrecarga.rel = 'preload';
+            linkPrecarga.as = 'video';
+            document.head.appendChild(linkPrecarga);
         }
 
-        canal.onmessage = function(evento) {
-            if (!sistemaListo) return; 
-            const data = evento.data;
+        // Le asignamos el nuevo video. El navegador cancela el anterior y descarga este en segundo plano
+        linkPrecarga.href = nombreVideo;
+        console.log(`>> Precargando preventivamente en memoria el próximo video: ${nombreVideo}`);
+    }
 
-            if (data.comando === 'CAMBIAR_ESTADO') {
-                pantallaTerminal.style.display = 'none';
-                if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+    function inicializarSistema() {
+        sistemaListo = true;
+        pantallaTerminal.style.display = 'none';
+        vidA.src = "esperando.mp4";
+        vidA.load();
+        vidA.play().then(() => vidA.classList.add('activo'));
+    }
 
-                const activo = (reproductorActual === 'A') ? vidA : vidB;
-                const fondo = (reproductorActual === 'A') ? vidB : vidA;
+    function obtenerNombreArchivo(url) {
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
 
-                // 1. Manejo del Subtítulo (Desaparece 0.4 segundos antes de expirar)
-                if (data.subtitulo && data.subtitulo.trim() !== "") {
-                    cajaSubtitulo.innerText = data.subtitulo;
-                    cajaSubtitulo.style.display = 'block';
-                    const tiempoOcultado = (data.tiempo * 1000) - 400; 
-                    temporizadorSubtitulo = setTimeout(() => { cajaSubtitulo.style.display = 'none'; }, tiempoOcultado > 0 ? tiempoOcultado : 10);
-                } else {
-                    cajaSubtitulo.style.display = 'none';
-                }
+    // NUEVA: Función encargada de animar el texto caracter a caracter
+    function iniciarEfectoTipeo(textoCompleto, tiempoTotalSegundos) {
+        // Limpiamos cualquier intervalo de tipeo que se esté ejecutando actualmente
+        if (intervaloTipeo) clearInterval(intervaloTipeo);
 
-                // 2. Manejo Dinámico del Audio Externo
-                if (data.audio && data.audio.trim() !== "") {
-                    // Muteamos los reproductores de video para usar el audio externo exclusivamente
-                    vidA.muted = true;
-                    vidB.muted = true;
-                    audioSeparado.src = data.audio;
-                    audioSeparado.load();
-                    audioSeparado.play().catch(e => console.log("Bloqueo de audio"));
-                } else {
-                    // Si no se definió audio, liberamos el sonido nativo de los videos
-                    vidA.muted = false;
-                    vidB.muted = false;
-                    audioSeparado.pause();
-                    audioSeparado.src = "";
-                }
+        cajaSubtitulo.innerText = "";
+        cajaFooter.style.display = 'flex'; // Mostramos el footer negro
 
-                if (obtenerNombreArchivo(activo.src) === data.video) return;
+        let i = 0;
+        // Calculamos una velocidad dinámica: se adapta para que termine de escribir 
+        // antes de que se agote el tiempo del video (por defecto añade una letra cada 30ms)
+        let velocidad = 30;
+        if (tiempoTotalSegundos > 0) {
+            const tiempoSeguroMilisejundos = (tiempoTotalSegundos * 1000) - 800;
+            const velocidadSugerida = tiempoSeguroMilisejundos / textoCompleto.length;
+            if (velocidadSugerida < 30) velocidad = Math.max(10, velocidadSugerida);
+        }
 
-                // 3. Intercambio de Video sin Parpadeo Negro
-                fondo.src = data.video;
-                fondo.load();
-                fondo.onloadeddata = function() {
-                    fondo.onloadeddata = null; 
-                    fondo.play().then(() => {
-                        fondo.classList.add('activo');
-                        activo.classList.remove('activo');
-                        activo.pause();
-                        reproductorActual = (reproductorActual === 'A') ? 'B' : 'A';
-                    }).catch(err => console.log(err));
-                };
-            } 
-            
-            else if (data.comando === 'OSCURECER') {
-                if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
-                vidA.pause(); vidB.pause(); audioSeparado.pause();
-                vidA.classList.remove('activo'); vidB.classList.remove('activo');
-                cajaSubtitulo.style.display = 'none';
-                pantallaTerminal.style.display = 'block';
+        intervaloTipeo = setInterval(() => {
+            if (i < textoCompleto.length) {
+                cajaSubtitulo.innerText += textoCompleto.charAt(i);
+                i++;
+            } else {
+                clearInterval(intervaloTipeo);
             }
-        };
-    </script>
+        }, velocidad);
+    }
+
+    canal.onmessage = function (evento) {
+        if (!sistemaListo) return;
+        const data = evento.data;
+
+        if (data.comando === 'CAMBIAR_ESTADO') {
+            pantallaTerminal.style.display = 'none';
+            if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+
+            const activo = (reproductorActual === 'A') ? vidA : vidB;
+            const fondo = (reproductorActual === 'A') ? vidB : vidA;
+
+            // 🔥 INTEGRADO AQUÍ: Activamos la precarga preventiva en segundo plano del video del siguiente botón
+            actualizarLinkPrecarga(data.videoSiguiente);
+
+            // 1. MODIFICADO: Manejo del Subtítulo con Animación de Tipeo e integración al Footer
+            if (data.subtitulo && data.subtitulo.trim() !== "") {
+                // Ejecutamos la animación letra por letra pasándole el texto y el tiempo asignado
+                iniciarEfectoTipeo(data.subtitulo, data.tiempo);
+
+                // Mantenemos tu lógica original: Desaparece el contenedor 0.4s antes de expirar
+                const tiempoOcultado = (data.tiempo * 1000) - 400;
+                temporizadorSubtitulo = setTimeout(() => {
+                    cajaFooter.style.display = 'none';
+                    if (intervaloTipeo) clearInterval(intervaloTipeo);
+                }, tiempoOcultado > 0 ? tiempoOcultado : 10);
+            } else {
+                // Si la acción no tiene subtítulo (como el estado 'esperar' por defecto), ocultamos el footer
+                cajaFooter.style.display = 'none';
+                if (intervaloTipeo) clearInterval(intervaloTipeo);
+            }
+
+            // 2. Manejo Dinámico del Audio Externo (Se mantiene intacto tu código)
+            if (data.audio && data.audio.trim() !== "") {
+                vidA.muted = true;
+                vidB.muted = true;
+                audioSeparado.src = data.audio;
+                audioSeparado.load();
+                audioSeparado.play().catch(e => console.log("Bloqueo de audio"));
+            } else {
+                vidA.muted = false;
+                vidB.muted = false;
+                audioSeparado.pause();
+                audioSeparado.src = "";
+            }
+
+            if (obtenerNombreArchivo(activo.src) === data.video) return;
+
+            // 3. Intercambio de Video sin Parpadeo Negro (Se mantiene intacto tu código)
+            fondo.src = data.video;
+            fondo.load();
+            fondo.onloadeddata = function () {
+                fondo.onloadeddata = null;
+                fondo.play().then(() => {
+                    fondo.classList.add('activo');
+                    activo.classList.remove('activo');
+                    activo.pause();
+                    reproductorActual = (reproductorActual === 'A') ? 'B' : 'A';
+                }).catch(err => console.log(err));
+            };
+        }
+
+        else if (data.comando === 'OSCURECER') {
+            if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+            if (intervaloTipeo) clearInterval(intervaloTipeo);
+            vidA.pause(); vidB.pause(); audioSeparado.pause();
+            vidA.classList.remove('activo'); vidB.classList.remove('activo');
+            cajaFooter.style.display = 'none';
+            pantallaTerminal.style.display = 'block';
+        }
+    };
+</script>
+
 </body>
+
 </html>
