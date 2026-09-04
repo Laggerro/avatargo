@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AvatarGO - Creador de libretos</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        .navbar { background: #2c3e50; padding: 15px 30px; display: flex; gap: 20px; }
+        .navbar a { color: white; text-decoration: none; font-weight: bold; font-size: 15px; opacity: 0.8; }
+        .navbar a:hover, .navbar a.active { opacity: 1; border-bottom: 2px solid #00ff00; }
+        .nav-visor { margin-left: auto; color: #00ff00 !important; }
+        .container { max-width: 1300px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { margin-top: 0; color: #1a1a1a; }
+        .zona-importar { background: #f8f9fc; border: 1px dashed #4e73df; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        .zona-importar p { margin: 0; font-size: 14px; color: #4e73df; font-weight: bold; }
+        .btn-importar { background: #4e73df; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        #importInput { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #e3e6f0; text-align: left; }
+        th { background: #f8f9fc; color: #4e73df; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .file-picker-container { display: flex; gap: 5px; align-items: center; }
+        .btn-browse { background: #e3e6f0; color: #4e73df; border: 1px solid #ccc; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .btn-browse:hover { background: #dddfeb; }
+
+        .btn { padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; margin-top: 15px; }
+        .btn-add { background: #28a745; }
+        .btn-download { background: #6c5ce7; float: right; }
+        .btn-delete { background: #dc3545; padding: 5px 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="index.html">Control</a>
+        <a href="creador.html" class="active">Creador de libretos</a>
+        <a href="avatar_display.html" target="_blank" class="nav-visor">🖥️ Abrir Visor (Nueva Pestaña)</a>
+    </div>
+
+    <div class="container">
+        <h1></h1> Diseñador de Botones de acción</h1>
+        
+        <div class="zona-importar">
+            <p>¿Quieres continuar un archivo existente?</p>
+            <button class="btn-importar" onclick="document.getElementById('importInput').click()">📂 Importar config.json</button>
+            <input type="file" id="importInput" accept=".json" onchange="importarJsonExistente(this)">
+        </div>
+        
+        <table id="tablaConfig">
+            <thead>
+                <tr>
+                    <th>Tipo (Color)</th>
+                    <th>Etiqueta del Botón (Label)</th>
+                    <th>Archivo de Video</th>
+                    <th>Audio Separado (Opcional)</th>
+                    <th>Tiempo (seg)</th>
+                    <th>Texto Subtítulo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas se inyectan dinámicamente -->
+            </tbody>
+        </table>
+
+        <button class="btn btn-add" onclick="agregarFila()">➕ Añadir Botón</button>
+        <button class="btn btn-download" onclick="exportarJSON()">💾 Descargar config.json</button>
+    </div>
+
+    <script>
+        // Fila por defecto inicial
+        window.onload = function() {
+            agregarFila({ tipo: 'hablar', label: 'Saludo Inicial', video: 'hablando.mp4', audio: '', tiempo: 5, subtitulo: '¡Hola a todos! Bienvenidos.' });
+        };
+
+        function actualizarVideoSugerido(selectElement) {
+            const fila = selectElement.closest('tr');
+            const videoInput = fila.querySelector('.video');
+            
+            if (selectElement.value === 'hablar') videoInput.value = 'hablando.mp4';
+            else if (selectElement.value === 'pensar') videoInput.value = 'pensando.mp4';
+            else if (selectElement.value === 'esperar') videoInput.value = 'esperando.mp4';
+            else if (selectElement.value === 'oscurecer') videoInput.value = '';
+        }
+
+        // Corregido: Ahora lee el índice [0] de la lista de archivos de forma segura
+        function capturarNombreArchivo(inputElement, claseDestino) {
+            const fila = inputElement.closest('tr');
+            const campoTexto = fila.querySelector('.' + claseDestino);
+            if (inputElement.files && inputElement.files.length > 0) {
+                campoTexto.value = inputElement.files[0].name; 
+            }
+        }
+
+        function agregarFila(datosFila = null) {
+            const tbody = document.querySelector('#tablaConfig tbody');
+            const nuevaFila = document.createElement('tr');
+            
+            const tipo = datosFila ? datosFila.tipo : 'hablar';
+            const label = datosFila ? datosFila.label : 'Nueva Acción';
+            const video = datosFila ? datosFila.video : 'hablando.mp4';
+            const audio = datosFila ? datosFila.audio : '';
+            const tiempo = datosFila ? datosFila.tiempo : 4;
+            const subtitulo = datosFila ? datosFila.subtitulo : '...';
+
+            const uidVideo = 'file_v_' + Math.floor(Math.random() * 1000000);
+            const uidAudio = 'file_a_' + Math.floor(Math.random() * 1000000);
+
+            nuevaFila.innerHTML = `
+                <td>
+                    <select class="tipo" onchange="actualizarVideoSugerido(this)">
+                        <option value="hablar" ${tipo === 'hablar' ? 'selected' : ''}>🗣️ Hablar (Verde)</option>
+                        <option value="pensar" ${tipo === 'pensar' ? 'selected' : ''}>💭 Pensar (Naranja)</option>
+                        <option value="esperar" ${tipo === 'esperar' ? 'selected' : ''}>🔵 Esperar (Azul)</option>
+                        <option value="oscurecer" ${tipo === 'oscurecer' ? 'selected' : ''}>⚫ Oscurecer (Negro)</option>
+                    </select>
+                </td>
+                <td><input type="text" class="label" value="${label}"></td>
+                <td>
+                    <div class="file-picker-container">
+                        <input type="text" class="video" value="${video}">
+                        <button class="btn-browse" onclick="document.getElementById('${uidVideo}').click()">📂</button>
+                        <input type="file" id="${uidVideo}" accept="video/*" style="display:none;" onchange="capturarNombreArchivo(this, 'video')">
+                    </div>
+                </td>
+                <td>
+                    <div class="file-picker-container">
+                        <input type="text" class="audio" value="${audio}" placeholder="Opcional">
+                        <button class="btn-browse" onclick="document.getElementById('${uidAudio}').click()">📂</button>
+                        <input type="file" id="${uidAudio}" accept="audio/*" style="display:none;" onchange="capturarNombreArchivo(this, 'audio')">
+                    </div>
+                </td>
+                <td><input type="number" class="tiempo" value="${tiempo}" min="0" step="0.1"></td>
+                <td><input type="text" class="subtitulo" value="${subtitulo}"></td>
+                <td><button class="btn btn-delete" onclick="eliminarFila(this)">❌</button></td>
+            `;
+            tbody.appendChild(nuevaFila);
+        }
+
+        function eliminarFila(btn) { 
+            btn.closest('tr').remove(); 
+        }
+
+        function importarJsonExistente(input) {
+            const archivo = input.files;
+            if (!archivo || archivo.length === 0) return;
+            const lector = new FileReader();
+            lector.onload = function(evento) {
+                try {
+                    const datos = JSON.parse(evento.target.result);
+                    document.querySelector('#tablaConfig tbody').innerHTML = '';
+                    datos.forEach(item => agregarFila(item));
+                } catch (error) { alert("Archivo JSON no válido."); }
+            };
+            lector.readAsText(archivo[0]);
+        }
+
+        function exportarJSON() {
+            const filas = document.querySelectorAll('#tablaConfig tbody tr');
+            const dataConfig = [];
+            filas.forEach(fila => {
+                dataConfig.push({
+                    tipo: fila.querySelector('.tipo').value,
+                    label: fila.querySelector('.label').value,
+                    video: fila.querySelector('.video').value,
+                    audio: fila.querySelector('.audio').value.trim(),
+                    tiempo: parseFloat(fila.querySelector('.tiempo').value) || 0,
+                    subtitulo: fila.querySelector('.subtitulo').value
+                });
+            });
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataConfig, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>

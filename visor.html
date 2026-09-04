@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>AvatarGO - Display</title>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.15s ease-in-out; z-index: 1; }
+        video.activo { opacity: 1; z-index: 2; }
+        .contenedor-subtitulo { position: fixed; bottom: 8%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.75); color: #ffffff; padding: 12px 30px; border-radius: 6px; font-size: 26px; font-family: Arial, sans-serif; font-weight: 500; text-align: center; max-width: 80%; display: none; z-index: 15; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .pantalla-dos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: #00ff00; padding: 20px; box-sizing: border-box; font-size: 20px; display: block; z-index: 10; }
+        .cursor { animation: parpadeo 0.8s infinite; }
+        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .btn-inicio { background: #00ff00; color: black; border: none; padding: 12px 24px; font-weight: bold; font-family: inherit; cursor: pointer; margin-top: 20px; display: inline-block; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <div id="pantallaTerminal" class="pantalla-dos">
+        <p>(C)COPYRIGHT IA CORP 2026.</p>
+        <br>
+        <div id="lineaPrompt">
+            <span>C:\preguntale a chatGPT>READY...</span><br>
+            <button class="btn-inicio" onclick="inicializarSistema()">[ EJECUTAR IA ]</button>
+        </div>
+    </div>
+    
+    <div id="cajaSubtitulo" class="contenedor-subtitulo"></div>
+
+    <video id="videoA" loop playsinline></video>
+    <video id="videoB" loop playsinline></video>
+    
+    <!-- Reproductor de audio independiente invisible -->
+    <audio id="reproductorAudio"></audio>
+
+    <script>
+        const vidA = document.getElementById('videoA');
+        const vidB = document.getElementById('videoB');
+        const audioSeparado = document.getElementById('reproductorAudio');
+        const pantallaTerminal = document.getElementById('pantallaTerminal');
+        const cajaSubtitulo = document.getElementById('cajaSubtitulo');
+        
+        const canal = new BroadcastChannel('anima_ai_channel');
+        let sistemaListo = false;
+        let reproductorActual = 'A'; 
+        let temporizadorSubtitulo = null;
+
+        function inicializarSistema() {
+            sistemaListo = true;
+            pantallaTerminal.style.display = 'none';
+            vidA.src = "esperando.mp4";
+            vidA.load();
+            vidA.play().then(() => vidA.classList.add('activo'));
+        }
+
+        function obtenerNombreArchivo(url) {
+            return url.substring(url.lastIndexOf('/') + 1);
+        }
+
+        canal.onmessage = function(evento) {
+            if (!sistemaListo) return; 
+            const data = evento.data;
+
+            if (data.comando === 'CAMBIAR_ESTADO') {
+                pantallaTerminal.style.display = 'none';
+                if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+
+                const activo = (reproductorActual === 'A') ? vidA : vidB;
+                const fondo = (reproductorActual === 'A') ? vidB : vidA;
+
+                // 1. Manejo del Subtítulo (Desaparece 0.4 segundos antes de expirar)
+                if (data.subtitulo && data.subtitulo.trim() !== "") {
+                    cajaSubtitulo.innerText = data.subtitulo;
+                    cajaSubtitulo.style.display = 'block';
+                    const tiempoOcultado = (data.tiempo * 1000) - 400; 
+                    temporizadorSubtitulo = setTimeout(() => { cajaSubtitulo.style.display = 'none'; }, tiempoOcultado > 0 ? tiempoOcultado : 10);
+                } else {
+                    cajaSubtitulo.style.display = 'none';
+                }
+
+                // 2. Manejo Dinámico del Audio Externo
+                if (data.audio && data.audio.trim() !== "") {
+                    // Muteamos los reproductores de video para usar el audio externo exclusivamente
+                    vidA.muted = true;
+                    vidB.muted = true;
+                    audioSeparado.src = data.audio;
+                    audioSeparado.load();
+                    audioSeparado.play().catch(e => console.log("Bloqueo de audio"));
+                } else {
+                    // Si no se definió audio, liberamos el sonido nativo de los videos
+                    vidA.muted = false;
+                    vidB.muted = false;
+                    audioSeparado.pause();
+                    audioSeparado.src = "";
+                }
+
+                if (obtenerNombreArchivo(activo.src) === data.video) return;
+
+                // 3. Intercambio de Video sin Parpadeo Negro
+                fondo.src = data.video;
+                fondo.load();
+                fondo.onloadeddata = function() {
+                    fondo.onloadeddata = null; 
+                    fondo.play().then(() => {
+                        fondo.classList.add('activo');
+                        activo.classList.remove('activo');
+                        activo.pause();
+                        reproductorActual = (reproductorActual === 'A') ? 'B' : 'A';
+                    }).catch(err => console.log(err));
+                };
+            } 
+            
+            else if (data.comando === 'OSCURECER') {
+                if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+                vidA.pause(); vidB.pause(); audioSeparado.pause();
+                vidA.classList.remove('activo'); vidB.classList.remove('activo');
+                cajaSubtitulo.style.display = 'none';
+                pantallaTerminal.style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>

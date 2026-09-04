@@ -1,0 +1,9 @@
+[
+  { "tipo": "hablar", "label": "Saludo Inicial", "video": "hablando.mp4", "tiempo": 5.0, "subtitulo": "¡Hola a todos! Bienvenidos a la simulación." },
+  { "tipo": "hablar", "label": "Explicación Técnica", "video": "hablando.mp4", "tiempo": 7.5, "subtitulo": "El sistema está corriendo de forma totalmente local en tu navegador." },
+  { "tipo": "hablar", "label": "Despedida", "video": "hablando.mp4", "tiempo": 4.0, "subtitulo": "Muchas gracias por su atención. ¡Hasta luego!" },
+  { "tipo": "pensar", "label": "Analizar Datos", "video": "pensando.mp4", "tiempo": 6.0, "subtitulo": "Procesando variables de entorno..." },
+  { "tipo": "pensar", "label": "Buscando Archivo", "video": "pensando.mp4", "tiempo": 3.5, "subtitulo": "Accediendo al búfer de memoria local..." },
+  { "tipo": "esperar", "label": "Modo Reposo Base", "video": "esperando.mp4", "tiempo": 0, "subtitulo": "" },
+  { "tipo": "oscurecer", "label": "Apagar Sistema", "video": "", "tiempo": 0, "subtitulo": "" }
+]
