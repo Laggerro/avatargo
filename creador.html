@@ -73,16 +73,16 @@
     <script>
         // Fila por defecto inicial
         window.onload = function() {
-            agregarFila({ tipo: 'hablar', label: 'Saludo Inicial', video: 'hablando.mp4', audio: '', tiempo: 5, subtitulo: '¡Hola a todos! Bienvenidos.' });
+            agregarFila({ tipo: 'hablar', label: 'Saludo Inicial', video: 'Archivos/hablando.mp4', audio: '', tiempo: 5, subtitulo: '¡Hola a todos! Bienvenidos.' });
         };
 
         function actualizarVideoSugerido(selectElement) {
             const fila = selectElement.closest('tr');
             const videoInput = fila.querySelector('.video');
             
-            if (selectElement.value === 'hablar') videoInput.value = 'hablando.mp4';
-            else if (selectElement.value === 'pensar') videoInput.value = 'pensando.mp4';
-            else if (selectElement.value === 'esperar') videoInput.value = 'esperando.mp4';
+            if (selectElement.value === 'hablar') videoInput.value = 'Archivos/hablando.mp4';
+            else if (selectElement.value === 'pensar') videoInput.value = 'Archivos/pensando.mp4';
+            else if (selectElement.value === 'esperar') videoInput.value = 'Archivos/esperando.mp4';
             else if (selectElement.value === 'oscurecer') videoInput.value = '';
         }
 

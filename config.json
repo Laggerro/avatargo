@@ -1,9 +1,58 @@
 [
-  { "tipo": "hablar", "label": "Saludo Inicial", "video": "hablando.mp4", "tiempo": 5.0, "subtitulo": "¡Hola a todos! Bienvenidos a la simulación." },
-  { "tipo": "hablar", "label": "Explicación Técnica", "video": "hablando.mp4", "tiempo": 7.5, "subtitulo": "El sistema está corriendo de forma totalmente local en tu navegador." },
-  { "tipo": "hablar", "label": "Despedida", "video": "hablando.mp4", "tiempo": 4.0, "subtitulo": "Muchas gracias por su atención. ¡Hasta luego!" },
-  { "tipo": "pensar", "label": "Analizar Datos", "video": "pensando.mp4", "tiempo": 6.0, "subtitulo": "Procesando variables de entorno..." },
-  { "tipo": "pensar", "label": "Buscando Archivo", "video": "pensando.mp4", "tiempo": 3.5, "subtitulo": "Accediendo al búfer de memoria local..." },
-  { "tipo": "esperar", "label": "Modo Reposo Base", "video": "esperando.mp4", "tiempo": 0, "subtitulo": "" },
-  { "tipo": "oscurecer", "label": "Apagar Sistema", "video": "", "tiempo": 0, "subtitulo": "" }
+  {
+    "tipo": "hablar",
+    "label": "Saludo Inicial",
+    "video": "Archivos/Presentación.mp4",
+    "audio": "",
+    "tiempo": 5,
+    "subtitulo": "¡Hola soy chatGPT, ¿Cómo estás?, Preguntame lo que quieras."
+  },
+  {
+    "tipo": "hablar",
+    "label": "Explicación Técnica",
+    "video": "Archivos/Cuales son mis cargos.mp4",
+    "audio": "",
+    "tiempo": 4.5,
+    "subtitulo": "¿Cúales son los cargos en mi contra?."
+  },
+  {
+    "tipo": "hablar",
+    "label": "Presentacion 2",
+    "video": "Archivos/Hablando.mp4",
+    "audio": "Archivos/hola soy chat gpt.mp3",
+    "tiempo": 4,
+    "subtitulo": "Muchas gracias por su atención. ¡Hasta luego!"
+  },
+  {
+    "tipo": "pensar",
+    "label": "Analizar Datos",
+    "video": "Archivos/pensando.mp4",
+    "audio": "",
+    "tiempo": 6,
+    "subtitulo": "Procesando variables de entorno..."
+  },
+  {
+    "tipo": "pensar",
+    "label": "Buscando Archivo",
+    "video": "Archivos/pensando.mp4",
+    "audio": "",
+    "tiempo": 3.5,
+    "subtitulo": "Accediendo al búfer de memoria local..."
+  },
+  {
+    "tipo": "esperar",
+    "label": "Modo Reposo Base",
+    "video": "Archivos/esperando.mp4",
+    "audio": "",
+    "tiempo": 0,
+    "subtitulo": ""
+  },
+  {
+    "tipo": "oscurecer",
+    "label": "Apagar Sistema",
+    "video": "Archivos/oscureciendo.mp4",
+    "audio": "",
+    "tiempo": 0,
+    "subtitulo": ""
+  }
 ]

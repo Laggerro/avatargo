@@ -245,7 +245,7 @@
             // Si ya fue usado, le añadimos el tilde visual al texto del botón
             let etiquetaTexto = esUsado ? `✓ ${item.label}` : item.label;
 
-            const audioSeguro = item.audio ? item.audio.replace(/"/g, '&quot;') : '';
+            const audioSeguro = normalizarAudio(item.audio).replace(/"/g, '&quot;');
 
             card.innerHTML = `
             <button id="btn_${index}" class="${colorClase}" onclick="ejecutarAccion('${item.tipo}', '${item.video}', '${audioSeguro}', ${item.tiempo}, \`${item.subtitulo || ''}\`, ${index})">
@@ -256,8 +256,17 @@
             contenedor.appendChild(card);
         }
 
+        function normalizarAudio(audio) {
+            if (audio === null || audio === undefined) return '';
+
+            const audioNormalizado = String(audio).trim();
+            return ['undefined', 'null'].includes(audioNormalizado.toLowerCase()) ? '' : audioNormalizado;
+        }
+
         function ejecutarAccion(tipo, videoArchivo, audioArchivo, tiempo, textoSubtitulo, index) {
             if (temporizadorEstado) clearTimeout(temporizadorEstado);
+
+            audioArchivo = normalizarAudio(audioArchivo);
 
             // ... (Toda tu lógica original para marcar botones usados se queda igual) ...
             if (tipo !== 'oscurecer' && !botonesUsados.includes(index)) {
@@ -290,7 +299,7 @@
             });
 
             temporizadorEstado = setTimeout(() => {
-                canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: 'esperando.mp4', audio: '', subtitulo: '' });
+                canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: 'Archivos/esperando.mp4', audio: '', subtitulo: '' });
             }, tiempo * 1000);
         }
 
