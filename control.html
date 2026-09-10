@@ -1,4 +1,4 @@
-<!-- index.html -->
+<!-- control.html -->
 <!DOCTYPE html>
 <html lang="es">
 
@@ -165,7 +165,7 @@
 <body>
 
     <div class="navbar">
-        <a href="index.html" class="active">Control</a>
+        <a href="control.html" class="active">Control</a>
         <a href="creador.html">Creador de libretos</a>
         <a href="visor.html" target="_blank" class="nav-visor">🖥️ Abrir Visor (Nueva Pestaña)</a>
     </div>
@@ -230,31 +230,46 @@
             lector.readAsText(archivo);
         }
 
-        function crearBotonHTML(item, index) {
-            const contenedor = document.getElementById('contenedorPrincipal');
-            const card = document.createElement('div');
+function crearBotonHTML(item, index) {
+  const contenedor = document.getElementById('contenedorPrincipal');
+  const card = document.createElement('div');
+  
+  const esUsado = botonesUsados.includes(index);
+  card.className = `card-boton ${esUsado ? 'usado' : ''}`;
+  card.id = `card_${index}`;
 
-            // Comprobar si este botón específico ya había sido usado
-            const esUsado = botonesUsados.includes(index);
-            card.className = `card-boton ${esUsado ? 'usado' : ''}`;
-            card.id = `card_${index}`;
+  let colorClase = `btn-${item.tipo}`;
+  let metaTexto = item.tiempo > 0 ? `${item.tiempo}s` : 'Acción Directa';
+  let etiquetaTexto = esUsado ? `${item.label}` : item.label;
+  const audioSeguro = normalizarAudio(item.audio);
 
-            let colorClase = `btn-${item.tipo}`;
-            let metaTexto = item.tiempo > 0 ? `⏱️ ${item.tiempo}s` : 'Acción Directa';
+  // Crear la estructura interna con DOM puro para evitar colisiones en onclick
+  const boton = document.createElement('button');
+  boton.id = `btn_${index}`;
+  boton.className = colorClase;
+  boton.innerText = etiquetaTexto;
 
-            // Si ya fue usado, le añadimos el tilde visual al texto del botón
-            let etiquetaTexto = esUsado ? `✓ ${item.label}` : item.label;
+  // Asignar el evento directamente en JS sin usar inline onclick
+  boton.addEventListener('click', () => {
+    ejecutarAccion(
+      item.tipo,
+      item.video,
+      audioSeguro,
+      item.tiempo,
+      item.subtitulo || '',
+      index
+    );
+  });
 
-            const audioSeguro = normalizarAudio(item.audio).replace(/"/g, '&quot;');
+  const divMeta = document.createElement('div');
+  divMeta.className = 'info-meta';
+  divMeta.innerText = metaTexto;
 
-            card.innerHTML = `
-            <button id="btn_${index}" class="${colorClase}" onclick="ejecutarAccion('${item.tipo}', '${item.video}', '${audioSeguro}', ${item.tiempo}, \`${item.subtitulo || ''}\`, ${index})">
-                ${etiquetaTexto}
-            </button>
-            <div class="info-meta">${metaTexto}</div>
-        `;
-            contenedor.appendChild(card);
-        }
+  card.appendChild(boton);
+  card.appendChild(divMeta);
+  contenedor.appendChild(card);
+}
+
 
         function normalizarAudio(audio) {
             if (audio === null || audio === undefined) return '';
@@ -299,8 +314,13 @@
             });
 
             temporizadorEstado = setTimeout(() => {
-                canal.postMessage({ comando: 'CAMBIAR_ESTADO', video: 'Archivos/esperando.mp4', audio: '', subtitulo: '' });
-            }, tiempo * 1000);
+  canal.postMessage({ 
+    comando: 'CAMBIAR_ESTADO', 
+    video: 'videos/esperando.mp4', 
+    audio: '', 
+    subtitulo: '' 
+  });
+}, tiempo * 1000);
         }
 
     </script>

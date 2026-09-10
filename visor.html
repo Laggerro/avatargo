@@ -174,38 +174,108 @@
     let temporizadorSubtitulo = null;
     let intervaloTipeo = null; // NUEVO: Guarda el control de la animación letra por letra
 
-    function actualizarLinkPrecarga(nombreVideo) {
-        // Si no hay video siguiente (fin del libreto), eliminamos cualquier precarga activa
-        if (!nombreVideo || nombreVideo.trim() === "") {
-            const linkViejo = document.getElementById('preloadDinamico');
-            if (linkViejo) linkViejo.remove();
-            return;
-        }
+function actualizarLinkPrecarga(nombreVideo) {
+  const linkViejo = document.getElementById('preloadDinamico');
+  
+  // Si no hay video siguiente o viene vacío, eliminamos cualquier precarga activa
+  if (!nombreVideo || typeof nombreVideo !== 'string' || nombreVideo.trim() === "") {
+    if (linkViejo) linkViejo.remove();
+    return;
+  }
 
-        // Buscamos si ya existe nuestra etiqueta de precarga instalada en el <head>
-        let linkPrecarga = document.getElementById('preloadDinamico');
+  // Buscamos si ya existe nuestra etiqueta de precarga
+  let linkPrecarga = linkViejo;
+  if (!linkPrecarga) {
+    linkPrecarga = document.createElement('link');
+    linkPrecarga.id = 'preloadDinamico';
+    linkPrecarga.rel = 'preload';
+    linkPrecarga.as = 'video';
+    document.head.appendChild(linkPrecarga);
+  }
 
-        if (!linkPrecarga) {
-            // Si no existe, la creamos por primera vez
-            linkPrecarga = document.createElement('link');
-            linkPrecarga.id = 'preloadDinamico';
-            linkPrecarga.rel = 'preload';
-            linkPrecarga.as = 'video';
-            document.head.appendChild(linkPrecarga);
-        }
+  // Asignamos el valor garantizando que no esté vacío
+  linkPrecarga.href = nombreVideo.trim();
+  console.log(`>> Precargando preventivamente en memoria el próximo video: ${nombreVideo}`);
+}
 
-        // Le asignamos el nuevo video. El navegador cancela el anterior y descarga este en segundo plano
-        linkPrecarga.href = nombreVideo;
-        console.log(`>> Precargando preventivamente en memoria el próximo video: ${nombreVideo}`);
+canal.onmessage = function (evento) {
+  if (!sistemaListo) return;
+  const data = evento.data;
+
+  if (data.comando === 'CAMBIAR_ESTADO') {
+    pantallaTerminal.style.display = 'none';
+    if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+
+    const activo = (reproductorActual === 'A') ? vidA : vidB;
+    const fondo = (reproductorActual === 'A') ? vidB : vidA;
+
+    // 1. Precarga preventiva (solo si existe un video válido)
+    actualizarLinkPrecarga(data.videoSiguiente);
+
+    // 2. Manejo del Subtítulo con Animación de Tipeo
+    if (data.subtitulo && data.subtitulo.trim() !== "") {
+      iniciarEfectoTipeo(data.subtitulo, data.tiempo);
+      const tiempoOcultado = (data.tiempo * 1000) - 400;
+      temporizadorSubtitulo = setTimeout(() => {
+        cajaFooter.style.display = 'none';
+        if (intervaloTipeo) clearInterval(intervaloTipeo);
+      }, tiempoOcultado > 0 ? tiempoOcultado : 10);
+    } else {
+      cajaFooter.style.display = 'none';
+      if (intervaloTipeo) clearInterval(intervaloTipeo);
     }
 
-    function inicializarSistema() {
-        sistemaListo = true;
-        pantallaTerminal.style.display = 'none';
-        vidA.src = "Archivos/esperando.mp4";
-        vidA.load();
-        vidA.play().then(() => vidA.classList.add('activo'));
+    // 3. Manejo de Audio Externo
+    if (data.audio && data.audio.trim() !== "") {
+      vidA.muted = true;
+      vidB.muted = true;
+      audioSeparado.src = data.audio;
+      audioSeparado.load();
+      
+      // Intentamos reproducir el audio manejando la promesa del navegador
+      audioSeparado.play().catch(e => {
+        console.warn("Bloqueo de autoplay en audio o archivo no encontrado:", e);
+      });
+    } else {
+      vidA.muted = false;
+      vidB.muted = false;
+      audioSeparado.pause();
+      audioSeparado.src = "";
     }
+
+    if (obtenerNombreArchivo(activo.src) === data.video) return;
+
+    // 4. Intercambio de Video sin Parpadeo
+    fondo.src = data.video;
+    fondo.load();
+    fondo.onloadeddata = function () {
+      fondo.onloadeddata = null;
+      fondo.play().then(() => {
+        fondo.classList.add('activo');
+        activo.classList.remove('activo');
+        activo.pause();
+        reproductorActual = (reproductorActual === 'A') ? 'B' : 'A';
+      }).catch(err => console.log("Error al reproducir video:", err));
+    };
+  }
+  else if (data.comando === 'OSCURECER') {
+    if (temporizadorSubtitulo) clearTimeout(temporizadorSubtitulo);
+    if (intervaloTipeo) clearInterval(intervaloTipeo);
+    vidA.pause(); vidB.pause(); audioSeparado.pause();
+    vidA.classList.remove('activo'); vidB.classList.remove('activo');
+    cajaFooter.style.display = 'none';
+    pantallaTerminal.style.display = 'block';
+  }
+};
+
+
+function inicializarSistema() {
+  sistemaListo = true;
+  pantallaTerminal.style.display = 'none';
+  vidA.src = "videos/esperando.mp4";
+  vidA.load();
+  vidA.play().then(() => vidA.classList.add('activo'));
+}
 
     function obtenerNombreArchivo(url) {
         return url.substring(url.lastIndexOf('/') + 1);
